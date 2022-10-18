@@ -34,27 +34,30 @@ Hive由中央任务调度引擎和下载引擎、解析引擎、存储引擎组�
 下载器名、解析器名、存储器名是各个引擎中的单个处理模块的名称，也是各自监听的http请求url中的参数
 链接是该任务需要爬取的链接
 '''
-任务包 = { 
-    "任务包uuid":str(uuid.uuid1()),
-    "下载器名":"示例",
-    "解析器名":"示例",
-    "存储器名":"示例",
-    "链接":"https://www.baidu.com/",
+任务包 = {
+    "任务包uuid": str(uuid.uuid1()),
+    "下载器名": "示例",
+    "解析器名": "示例",
+    "存储器名": "示例",
+    "链接": "https://www.baidu.com/",
 }
 
 # 在任务正式开始前，将任务包的信息打印出来，供后续比对
-print("任务开始前的任务包:",任务包)
+print("任务开始前的任务包:", 任务包)
 # 任务包发往下载引擎下载数据
-响应 = requests.post(url=下载引擎[0]+"/"+任务包['下载器名'], headers={'Content-Type': 'application/json'}, data=json.dumps(任务包))
+响应 = requests.post(url=下载引擎[0]+"/"+任务包['下载器名'],
+                   headers={'Content-Type': 'application/json'}, data=json.dumps(任务包))
 # 下载引擎完成自己的业务逻辑，将网页源码写入任务包然后将任务包返回，此处把下载引擎返回的任务包再格式化成dict类型
 任务包 = json.loads(响应.text)
 # 任务包被发往解析引擎，解析引擎从中解析出所需的数据，此处示例解析引擎中解析出的数据是源码中的title
-响应 = requests.post(url=解析引擎[0]+"/"+任务包['解析器名'], headers={'Content-Type': 'application/json'}, data=json.dumps(任务包))
+响应 = requests.post(url=解析引擎[0]+"/"+任务包['解析器名'],
+                   headers={'Content-Type': 'application/json'}, data=json.dumps(任务包))
 # 解析引擎返回的任务包格式化
 任务包 = json.loads(响应.text)
 # 任务包发往存储引擎，示例存储引擎只将解析引擎解析出的‘标题’数据进行输出，并未持久化存储
-响应 = requests.post(url=存储引擎[0]+"/"+任务包['解析器名'], headers={'Content-Type': 'application/json'}, data=json.dumps(任务包))
+响应 = requests.post(url=存储引擎[0]+"/"+任务包['解析器名'],
+                   headers={'Content-Type': 'application/json'}, data=json.dumps(任务包))
 # 存储引擎返回的任务包格式化
 任务包 = json.loads(响应.text)
 # 在任务包经过一系列的处理之后，将任务包打印出来供对比
-print("任务结束后的任务包:",任务包)
+print("任务结束后的任务包:", 任务包)
